@@ -1,6 +1,6 @@
 
 from dataclasses import dataclass, field
-from uuid import UUID, uuid4
+from uuid import uuid4
 from datetime import date, datetime
 
 from expense_tracker.domain.errors import InvalidAmount, ExpenseDataError
