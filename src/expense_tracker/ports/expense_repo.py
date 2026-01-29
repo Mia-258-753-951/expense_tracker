@@ -1,20 +1,19 @@
-
 from typing import Protocol
 
 from expense_tracker.domain.models import Expense
 
+
 class ExpenseRepository(Protocol):
-    
     def add(self, exp: Expense) -> str: ...
-    
+
     def get(self, exp_id: str) -> Expense | None: ...
-    
+
     def list_all(self) -> list[Expense]: ...
-    
+
     def list_by_category(self, category: str) -> list[Expense]: ...
-    
+
     def list_by_wallet(self, wallet: str) -> list[Expense]: ...
-    
+
     def update(self, modified_exp: Expense) -> Expense: ...
-    
+
     def delete(self, exp_id: str) -> None: ...
