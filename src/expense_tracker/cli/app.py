@@ -62,6 +62,14 @@ def list(
     typer.echo(f'List of Expenses:\n')
     for e in exps:
         typer.echo(f'- {e}')
+        
+@app.command()
+def get(id: str):
+    exp = exp_serv.get_expense(exp_id=id)
+    if exp is None:
+        typer.echo(f'Expense not found with id {id}')
+        raise typer.Exit(code=1)
+    typer.echo(f'- Expense {id}:\n{exp}')
 
 @app.command()        
 def update(
