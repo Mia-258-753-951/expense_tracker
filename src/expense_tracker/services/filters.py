@@ -20,10 +20,7 @@ class ExpenseFilter:
     limit_: int | None = None  # nº máximo de registros a mostrar
     sort_: str | None = None
     
-class _Unset:
-    def __repr__(self):
-        return 'UNSET'
-        
+                    
 UNSET = object()   # sentinel para patch
 
 @dataclass

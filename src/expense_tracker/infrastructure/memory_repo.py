@@ -16,8 +16,6 @@ class InMemoryExpenseRepository(ExpenseRepository):
         return exp.id
 
     def get(self, exp_id: str) -> Expense | None:
-        if exp_id not in self._data:
-            raise ExpenseNotFound(f'No expense with id "{exp_id}" found.')
         return self._data.get(exp_id)
 
     def list_all(self) -> list[Expense]:
@@ -29,7 +27,5 @@ class InMemoryExpenseRepository(ExpenseRepository):
         return modified_exp
 
     def delete(self, exp_id: str) -> None:
-        if exp_id not in self._data:
-            raise ExpenseNotFound(f'No expense with id "{exp_id}" found.')
         del self._data[exp_id]
         return None

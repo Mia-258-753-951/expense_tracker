@@ -17,7 +17,25 @@ class ExpenseService:
         return self.repo.get(exp_id=exp_id)
 
     def list_expenses(self, filters: ExpenseFilter) -> list[Expense]:
-        return self.repo.list_all()
+        exps = self.repo.list_all()
+        
+        if filters.from_date_ is not None:
+            exps = [e for e in exps if e.date >= filters.from_date_]
+        if filters.to_date_ is not None:
+            exps = [e for e in exps if e.date <= filters.to_date_]
+        if filters.category_ is not None:
+            exps = [e for e in exps if e.category.casefold() == filters.category_.strip().casefold()]
+        if filters.wallet_ is not None:
+            exps = [e for e in exps if e.wallet.casefold() == filters.wallet_.strip().casefold()]
+        if filters.limit_ is not None:
+            exps = [e for e in exps][:filters.limit_]
+        if filters.sort_ is not None:
+            if filters.sort_ == 'amount':
+                exps = sorted(exps, key=lambda e: e.amount)
+            if filters.sort_ == 'date':
+                exps = sorted(exps, key=lambda e: e.date)
+                
+        return exps
 
     def update_expense(self, patch: ExpenseUpdate) -> Expense:
         exp = self.repo.get(exp_id=patch.id)        
@@ -39,4 +57,7 @@ class ExpenseService:
         return self.repo.update(modified_exp=exp)            
 
     def delete_expense(self, exp_id: str) -> None:
+        exp = self.repo.get(exp_id=exp_id)        
+        if exp is None:
+            raise ExpenseNotFound(f'No expense with id "{exp_id}" found.')
         self.repo.delete(exp_id=exp_id)
