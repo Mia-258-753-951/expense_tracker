@@ -1,12 +1,12 @@
 
-import typer
-from datetime import date
 import calendar
-import enum
+from datetime import date
+
+import typer
 
 from expense_tracker.infrastructure.memory_repo import InMemoryExpenseRepository
+from expense_tracker.services.filters import StatsBy, StatsFilter
 from expense_tracker.services.stats_service import ExpenseStats
-from expense_tracker.services.filters import ExpenseFilter, StatsBy, StatsFilter
 
 app = typer.Typer()
 
@@ -35,7 +35,7 @@ def moth_stats(month: date = typer.Option(..., '--moth', formats=['%Y-%m'])):
     header = (f'{month.year}-{month.month} stats:')
     typer.echo(header)
     typer.echo('-' * len(header))    
-    typer.echo(f'- {"Total amount spent:":<{label_w}} {stats["total_amount"]:>{col_w}.2f} €')
+    typer.echo(f'- {"Total amount spent:":<{label_w}} {stats["total_amount"]*100:>{col_w}.2f} €')
     typer.echo(f'- {"Number of payments:":<{label_w}} {stats["num_exps"]:>{col_w}}')
     typer.echo(f'- {"Top 3 categories:":<{label_w}} {top_cas_str}')
     typer.echo(f'- {"top 3 wallets:":<{label_w}} {top_wals_str}')
@@ -70,7 +70,9 @@ def stats_range(
         total_amount = sum(k['total'] for k in stats) * 100
         label_w = 35
         col_w = 12
-        header = (f'{app_filter.upper():<{label_w}}{"TOTAL(€)":>{col_w}}{"%":>{col_w}}{"COUNT":>{col_w}}')        
+        header = (
+            f'{app_filter.upper():<{label_w}}{"TOTAL(€)":>{col_w}}{"%":>{col_w}}{"COUNT":>{col_w}}'
+            )        
         typer.echo(header)
         typer.echo('-' * len(header))
         for k in stats:

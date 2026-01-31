@@ -1,9 +1,8 @@
-from typing import Any
 
+from expense_tracker.domain.errors import ExpenseNotFound
 from expense_tracker.domain.models import Expense
 from expense_tracker.ports.expense_repo import ExpenseRepository
-from expense_tracker.services.filters import ExpenseFilter, ExpenseUpdate, UNSET
-from expense_tracker.domain.errors import ExpenseNotFound
+from expense_tracker.services.filters import UNSET, ExpenseFilter, ExpenseUpdate
 
 
 class ExpenseService:
@@ -24,7 +23,9 @@ class ExpenseService:
         if filters.to_date_ is not None:
             exps = [e for e in exps if e.date <= filters.to_date_]
         if filters.category_ is not None:
-            exps = [e for e in exps if e.category.casefold() == filters.category_.strip().casefold()]
+            exps = [
+                e for e in exps if e.category.casefold() == filters.category_.strip().casefold()
+                    ]
         if filters.wallet_ is not None:
             exps = [e for e in exps if e.wallet.casefold() == filters.wallet_.strip().casefold()]
         if filters.limit_ is not None:

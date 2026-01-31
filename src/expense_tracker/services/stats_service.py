@@ -1,25 +1,33 @@
 from datetime import timedelta
 from typing import Any
 
-from expense_tracker.services.filters import ExpenseFilter, StatsFilter, StatsBy
 from expense_tracker.ports.expense_repo import ExpenseRepository
+from expense_tracker.services.filters import StatsBy, StatsFilter
+
 
 class ExpenseStats:
     def __init__(self, repo: ExpenseRepository) -> None:
         self.repo = repo
         
     def month_stats(self, month_year: StatsFilter) -> dict[str, Any]:
+        TOP_LIMIT = 3
         exps = self.repo.list_all()
         if month_year.start_date is None or month_year.end_date is None:
             raise ValueError('Not a valid date range.')
         
         filtered_exp = [e for e in exps if month_year.start_date<= e.date <= month_year.end_date]
+        top_cat = {}
+        top_wal = {}
+        for e in filtered_exp:
+            # Separados en dos dicts por si alguna categoría se llamara igual que una wallet.
+            top_cat[e.category] = top_cat.get(e.category, 0) + e.amount
+            top_wal[e.wallet] = top_wal.get(e.wallet, 0) + e.amount     
         
         stats = {}
-        stats['total_amount'] = sum(e.amount for e in filtered_exp) * 100
+        stats['total_amount'] = sum(e.amount for e in filtered_exp)
         stats['num_exps'] = len(filtered_exp)
-        stats['top_cat'] = [e.category for e in filtered_exp][:3]
-        stats['top_wal'] = [e.wallet for e in filtered_exp][:3]
+        stats['top_cat'] = sorted(top_cat, key= lambda x: top_cat[x],reverse=True)[:TOP_LIMIT]
+        stats['top_wal'] = sorted(top_wal, key= lambda x: top_wal[x],reverse=True)[:TOP_LIMIT]
         
         return stats
     
@@ -60,7 +68,7 @@ class ExpenseStats:
             stats[key]['total'] += e.amount
             stats[key]['num'] += 1
             
-        return (filter.by.value, stats)
+        return (filter_.by.value, stats)
     
     def stats_budget(self, month_year: StatsFilter, limit: float) -> float:
         """
@@ -68,7 +76,10 @@ class ExpenseStats:
         correspondiente al % consumido.
         """
         exps = self.repo.list_all()
-        total_spent = sum(e.amount for e in exps if month_year.start_date <= e.date <= month_year.end_date) * 100
+        total_spent = (
+            sum(e.amount for e in exps 
+                if month_year.start_date <= e.date <= month_year.end_date) * 100
+        )
         
         return total_spent
                 

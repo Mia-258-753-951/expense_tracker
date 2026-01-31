@@ -1,13 +1,13 @@
 
-import typer
 from datetime import date
 from typing import Any
 
+import typer
 
+from expense_tracker.domain.models import Expense
 from expense_tracker.infrastructure.memory_repo import InMemoryExpenseRepository
 from expense_tracker.services.expense_service import ExpenseService
-from expense_tracker.domain.models import Expense
-from expense_tracker.services.filters import ExpenseFilter, SortMethods, UNSET, ExpenseUpdate
+from expense_tracker.services.filters import UNSET, ExpenseFilter, ExpenseUpdate, SortMethods
 
 app = typer.Typer()
 
@@ -60,7 +60,7 @@ def list(
     
     exps = exp_serv.list_expenses(filters)
     
-    typer.echo(f'List of Expenses:\n')
+    typer.echo('List of Expenses:\n')
     for e in exps:
         typer.echo(f'- {e}')
         
@@ -97,9 +97,9 @@ def update(
             
             updated = exp_serv.update_expense(patch=patch)            
             
-        except:
+        except Exception:
             typer.echo(f"Expense not found with id {id}")
-            raise typer.Exit(code=1)
+            raise typer.Exit(code=1) from None
 
         typer.echo(f"Updated expense:\n{updated}")
         

@@ -20,6 +20,9 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py313"
+[tool.ruff.lint.flake8-bugbear]
+# Permite llamadas a typer.Option y typer.Argument en valores por defecto
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

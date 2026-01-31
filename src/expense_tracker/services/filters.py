@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from enum import Enum
 from datetime import date
+from enum import Enum
 from typing import Any
+
 
 class SortMethods(str, Enum):
     AMOUNT = 'amount'

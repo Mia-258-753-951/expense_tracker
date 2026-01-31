@@ -2,6 +2,7 @@ from typing import Protocol
 
 from expense_tracker.domain.models import Expense
 
+
 class ExpenseRepository(Protocol):
     def add(self, exp: Expense) -> str: ...
 
