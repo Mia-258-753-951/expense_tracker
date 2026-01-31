@@ -38,3 +38,17 @@ class ExpenseUpdate:
     wallet: str | None = None
     note: str | None | Any = UNSET
     currency: str | None = None
+    
+class StatsBy(str, Enum):
+    CATEGORY = 'category'
+    WALLET = 'wallet'
+    DAY = 'day'
+    
+@dataclass
+class StatsFilter:
+    start_date: date
+    end_date: date
+    by: StatsBy | None = None
+    
+
+    

@@ -8,7 +8,8 @@ from expense_tracker.infrastructure.memory_repo import InMemoryExpenseRepository
 from expense_tracker.services.expense_service import ExpenseService
 from expense_tracker.domain.models import Expense
 from expense_tracker.services.filters import ExpenseFilter, SortMethods, UNSET, ExpenseUpdate
-app = typer.Typer(name='Expense Tracker')
+
+app = typer.Typer()
 
 exp_repo = InMemoryExpenseRepository()
 exp_serv = ExpenseService(exp_repo)
