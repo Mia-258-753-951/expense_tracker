@@ -7,6 +7,7 @@ import typer
 from expense_tracker.infrastructure.memory_repo import InMemoryExpenseRepository
 from expense_tracker.services.filters import StatsBy, StatsFilter
 from expense_tracker.services.stats_service import ExpenseStats
+from expense_tracker.services.stats_models import StatsSumary, GroupRow
 
 app = typer.Typer()
 
@@ -30,13 +31,14 @@ def moth_stats(month: date = typer.Option(..., '--moth', formats=['%Y-%m'])):
     label_w = 22
     col_w = 8
     # pasamos los top cat y wal a str para no presentar listas al usuario
-    top_cas_str = ','.join(stats['top_cat'])
-    top_wals_str = ','.join(stats['top_wal'])
+    assert stats.top_categories is not None and stats.top_wallets is not None
+    top_cas_str = ','.join(stats.top_categories)
+    top_wals_str = ','.join(stats.top_wallets)
     header = (f'{month.year}-{month.month} stats:')
     typer.echo(header)
     typer.echo('-' * len(header))    
-    typer.echo(f'- {"Total amount spent:":<{label_w}} {stats["total_amount"]*100:>{col_w}.2f} €')
-    typer.echo(f'- {"Number of payments:":<{label_w}} {stats["num_exps"]:>{col_w}}')
+    typer.echo(f'- {"Total amount spent:":<{label_w}} {stats.total_amount*100:>{col_w}.2f} €')
+    typer.echo(f'- {"Number of payments:":<{label_w}} {stats.count:>{col_w}}')
     typer.echo(f'- {"Top 3 categories:":<{label_w}} {top_cas_str}')
     typer.echo(f'- {"top 3 wallets:":<{label_w}} {top_wals_str}')
 
@@ -54,37 +56,41 @@ def stats_range(
         by=by,
     )
     
-    app_filter, stats = stat_serv.stats_by(filter_=filter_)
+    key, stats = stat_serv.stats_by(filter_=filter_)
     
-    if app_filter is None:
+    if key is None:
+        assert isinstance(stats, StatsSumary)
         label_w = 20
         col_w = 8
         header = (f'{"Range:":<{label_w}} {start_date} -> {end_date}')
         typer.echo(header)
         typer.echo('-' * len(header))
-        typer.echo(f'{"Total:":<{label_w}} {stats["total_amount"]:>{col_w}.2f} €')
-        typer.echo(f'{"Number of expenses:":<{label_w}} {stats["num_exps"]:>{col_w}}')
-        typer.echo(f'{"Expense average:":<{label_w}} {stats["average_exp"]:>{col_w}} €')
+        typer.echo(f'{"Total:":<{label_w}} {stats.total_amount:>{col_w}.2f} €')
+        typer.echo(f'{"Number of expenses:":<{label_w}} {stats.count:>{col_w}}')
+        typer.echo(f'{"Expense average:":<{label_w}} {stats.average:>{col_w}} €')
     
-    if app_filter != 'day':
-        total_amount = sum(k['total'] for k in stats) * 100
+    if key != 'day':
+        assert key is not None
+        assert isinstance(stats, list)
+        total_amount = sum(g.total for g in stats) * 100
         label_w = 35
         col_w = 12
         header = (
-            f'{app_filter.upper():<{label_w}}{"TOTAL(€)":>{col_w}}{"%":>{col_w}}{"COUNT":>{col_w}}'
+            f'{key.upper():<{label_w}}{"TOTAL(€)":>{col_w}}{"%":>{col_w}}{"COUNT":>{col_w}}'
             )        
         typer.echo(header)
         typer.echo('-' * len(header))
         for k in stats:
-            if not isinstance(k, date):
-                typer.echo(
+            typer.echo(
                     f'{k:<{label_w}}'
-                    f'{stats[k]["total"]*100:>{col_w}.2f} '
-                    f'{stats[k]["total"]*100/total_amount:>{col_w}.2f}%'
-                    f'{stats[k]["num"]:>{col_w}}'
+                    f'{k.total*100:>{col_w}.2f} '
+                    f'{k.percent:>{col_w}.2f}%'
+                    f'{k.count:>{col_w}}'
                 )
     
-    if app_filter == 'day':
+    if key == 'day':
+        assert key is not None
+        assert isinstance(stats, list)
         label_w = 15
         col_w = 12
         header = (f'{"DATE":<{label_w}}{"TOTAL":>{col_w}}{"COUNT":>{col_w}}')
@@ -92,9 +98,9 @@ def stats_range(
         typer.echo('-' * len(header))
         for k in stats:
             typer.echo(
-                f'{stats[k]:<{label_w}}'
-                f'{stats["total"]*100:>{col_w}}'
-                f'{stats["num"]:>{col_w}}'
+                f'{k:<{label_w}}'
+                f'{k.total*100:>{col_w}}'
+                f'{k.count:>{col_w}}'
             )
 
 @app.command()    

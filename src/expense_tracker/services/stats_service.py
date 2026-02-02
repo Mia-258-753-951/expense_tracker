@@ -3,13 +3,16 @@ from typing import Any
 
 from expense_tracker.ports.expense_repo import ExpenseRepository
 from expense_tracker.services.filters import StatsBy, StatsFilter
+from expense_tracker.services.stats_models import StatsSumary, GroupRow
 
+
+# TODO: rediseñar las salidas creando objetos específicos
 
 class ExpenseStats:
     def __init__(self, repo: ExpenseRepository) -> None:
         self.repo = repo
         
-    def month_stats(self, month_year: StatsFilter) -> dict[str, Any]:
+    def month_stats(self, month_year: StatsFilter) -> StatsSumary:
         TOP_LIMIT = 3
         exps = self.repo.list_all()
         if month_year.start_date is None or month_year.end_date is None:
@@ -23,26 +26,27 @@ class ExpenseStats:
             top_cat[e.category] = top_cat.get(e.category, 0) + e.amount
             top_wal[e.wallet] = top_wal.get(e.wallet, 0) + e.amount     
         
-        stats = {}
-        stats['total_amount'] = sum(e.amount for e in filtered_exp)
-        stats['num_exps'] = len(filtered_exp)
-        stats['top_cat'] = sorted(top_cat, key= lambda x: top_cat[x],reverse=True)[:TOP_LIMIT]
-        stats['top_wal'] = sorted(top_wal, key= lambda x: top_wal[x],reverse=True)[:TOP_LIMIT]
-        
-        return stats
+                        
+        return StatsSumary(
+            total_amount=sum(e.amount for e in filtered_exp)*100,
+            count=len(filtered_exp),
+            average = (sum(e.amount for e in filtered_exp)*100)/len(filtered_exp),
+            top_categories=sorted(top_cat, key= lambda x: top_cat[x],reverse=True)[:TOP_LIMIT],
+            top_wallets=sorted(top_wal, key= lambda x: top_wal[x],reverse=True)[:TOP_LIMIT],
+        )
     
-    def stats_by(self, filter_: StatsFilter) -> Any:
+    def stats_by(self, filter_: StatsFilter) -> tuple[None, StatsSumary] | tuple[str,list[GroupRow]]:
         exps = self.repo.list_all()
         in_range = [e for e in exps if filter_.start_date <= e.date <= filter_.end_date]
         
-        if filter_.by is None:
-            total = sum(e.amount for e in in_range) * 100
-            return (None, {
-                'total_amount': total,
-                'num_exps': len(in_range),
-                'average_exp': total / len(in_range)
-            })
-        
+        if filter_.by is None:    
+            return (None, StatsSumary(
+                total_amount= sum(e.amount for e in in_range)*100,
+                count=len(in_range),
+                average=(sum(e.amount for e in in_range)*100)/len(in_range),
+            )
+                    )
+                
         stats = {}
         # preparamos por si el fitro es por DAY, que entren todos los días del range elegido
         # creamos un key diario para el range
@@ -50,9 +54,8 @@ class ExpenseStats:
         while current <= filter_.end_date:
             stats[current.isoformat()] = {'total': 0, 'num': 0}
             current += timedelta(days=1)
-            
-        for e in in_range:
-            
+        stats_list = []    
+        for e in in_range:            
             if filter_.by == StatsBy.CATEGORY:
                 key = e.category
             if filter_.by == StatsBy.WALLET:
@@ -67,8 +70,15 @@ class ExpenseStats:
             
             stats[key]['total'] += e.amount
             stats[key]['num'] += 1
+        for k in stats:
+            stats_list.append(GroupRow(
+                key=k,
+                total=stats[k]['total']*100,
+                count=stats[k]['num'],
+                percent=(stats[k]['total']*100)/stats[k]['num'],
+            ))
             
-        return (filter_.by.value, stats)
+        return (filter_.by.value, stats_list)
     
     def stats_budget(self, month_year: StatsFilter, limit: float) -> float:
         """

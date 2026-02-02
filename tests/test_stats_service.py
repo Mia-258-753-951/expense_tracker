@@ -58,4 +58,28 @@ def test_month_stats_returns_dict_with_month_stats(exp_serv, stat_serv):
     assert month_stats['top_cat'] == ['car']
     assert month_stats['top_wal'] == ['home']
     
+def test_stats_by_apply_option_and_returns_selected_stats(exp_serv, stat_serv):
+    exp1 = Expense(
+        amount=100,
+        date=date(2026, 1, 30),
+        category='car',
+        wallet='home',
+    )
+    exp2 = Expense(
+        amount=100,
+        date=date(2026, 1, 30),
+        category='car',
+        wallet='home',
+    )
     
+    exp3 = Expense(
+        amount=200,
+        date=date(2026, 2, 28),
+        category='pet',
+        wallet='home',
+    )
+    exp_serv.add_expense(exp1)
+    exp_serv.add_expense(exp2)
+    exp_serv.add_expense(exp3)
+    
+    # TODO finish test design including the different filters
