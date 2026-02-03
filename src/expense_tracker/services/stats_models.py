@@ -1,5 +1,5 @@
-
 from dataclasses import dataclass
+
 
 @dataclass
 class StatsSummary:
@@ -8,14 +8,16 @@ class StatsSummary:
     average: float
     top_categories: list[str] | None = None
     top_wallets: list[str] | None = None
-    
+
+
 @dataclass
 class GroupRow:
     key: str
     total: float
     count: int
     percent: float
-    
+
+
 @dataclass
 class BudgetReport:
     year: str

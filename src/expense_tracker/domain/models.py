@@ -28,12 +28,12 @@ class Expense:
         self.wallet = (self.wallet or "").strip()
         if not self.wallet:
             raise ExpenseDataError('"wallet" cannot be empty.')
-    
+
     def __str__(self) -> str:
-    # Convertimos céntimos a formato decimal (p.e. 1050 -> 10,50)
+        # Convertimos céntimos a formato decimal (p.e. 1050 -> 10,50)
         amount_fmt = f"{self.amount / 100:,.2f} {self.currency}"
         date_fmt = self.date.strftime("%d/%m/%Y")
-        
+
         return (
             f"[{date_fmt}] {self.category:<12} | "
             f"{amount_fmt:>10} | "

@@ -10,8 +10,6 @@ class InMemoryExpenseRepository(ExpenseRepository):
         self._data: dict[str, Expense] = {}
 
     def add(self, exp: Expense) -> str:
-        if exp.id in self._data:
-            raise ExpenseAlreadyExists(f'Expense with id "{exp.id}" already exists.')
         self._data[exp.id] = exp
         return exp.id
 
