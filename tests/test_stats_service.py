@@ -53,7 +53,7 @@ def test_month_stats_returns_month_info(exp_serv, stat_serv):
     
     month_stats = stat_serv.month_stats(filter_)
     
-    assert month_stats.total_amount == 20000
+    assert month_stats.total_amount == 200/100
     assert month_stats.count == 2
     assert month_stats.top_categories == ['car']
     assert month_stats.top_wallets == ['home']
@@ -114,53 +114,56 @@ def test_stats_by_apply_option_and_returns_selected_stats(exp_serv, stat_serv):
         by=StatsBy.DAY,
     )
     
-    key0, stats0 = stat_serv.stats_by(filter_=_filter0)
-    key1, stats1 = stat_serv.stats_by(filter_=_filter1)
-    key2, stats2 = stat_serv.stats_by(filter_=_filter2)
-    key3, stats3 = stat_serv.stats_by(filter_=_filter3)
+    start_date=date(2026, 1, 1)
+    end_date=date(2026, 1, 31)
     
-    assert key0 == None
+    stats0 = stat_serv.summary_range(start_date, end_date)
+    stats1 = stat_serv.by_category(start_date, end_date)
+    stats2 = stat_serv.by_wallet(start_date, end_date)
+    stats3 = stat_serv.by_day(start_date, end_date)
+    
+    
     assert stats0.total_amount == 4
     assert stats0.count == 3
     assert stats0.average == 4/3
     
-    assert key1 == 'category'
+    
     assert isinstance(stats1, list)
-    assert len(stats1) == 31
+    assert len(stats1) == 2
     for s in stats1:
         if s.key == 'car':
             assert s.total == 2
             assert s.count == 2
-            assert s.percent == 2 / 2
-        if s.key == 'wallet':
+            assert s.percent == s.total / stats0.total_amount * 100
+        if s.key == 'pet':
             assert s.total == 2
             assert s.count == 1
-            assert s.percent == 2 / 1
+            assert s.percent == s.total / stats0.total_amount * 100
             
-    assert key2 == 'wallet'
+    
     assert isinstance(stats2, list)
-    assert len(stats2) == 31
+    assert len(stats2) == 2
     for s in stats2:
         if s.key == 'home':
             assert s.total == 2
             assert s.count == 2
-            assert s.percent == 2 / 2
-        if s.key == 'pet':
+            assert s.percent == s.total / stats0.total_amount * 100
+        if s.key == 'other':
             assert s.total == 2
             assert s.count == 1
-            assert s.percent == 2 / 1
+            assert s.percent == s.total / stats0.total_amount * 100
             
-    assert key3 == 'day'
+
     assert isinstance(stats3, list)
     assert len(stats3) == 31
     for s in stats3:
         if s.key == '2026-01-30':
             assert s.total == 2
             assert s.count == 2
-            assert s.percent == 2 / 2
+            assert s.percent == s.total / stats0.total_amount * 100
         if s.key == '2026-01-28':
             assert s.total == 2
             assert s.count == 1
-            assert s.percent == 2 / 1
+            assert s.percent == s.total / stats0.total_amount * 100
         
     

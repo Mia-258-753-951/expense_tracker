@@ -38,7 +38,7 @@ class ExpenseStats:
         exps = self.repo.list_all()
         in_range = [e for e in exps if start_date <= e.date <= end_date]
         
-        total = sum(e.amount for e in in_range)/100  # dividimos entre 100 para que el CLI recibas Euros, no céntimos
+        total = sum(e.amount for e in in_range) / 100  # dividimos entre 100 para que el CLI recibas Euros, no céntimos
         
         return StatsSummary(
                 total_amount= total,
@@ -49,7 +49,7 @@ class ExpenseStats:
     def by_category(self, start_date: date, end_date: date) -> list[GroupRow]:
         exps = self.repo.list_all()
         in_range = [e for e in exps if start_date <= e.date <= end_date]
-        total = sum(e.amount for e in in_range)/100  # dividimos entre 100 para que el CLI recibas Euros, no céntimos
+        total = sum(e.amount for e in in_range) 
         stats = {}
         for e in in_range:
             if e.category not in stats:
@@ -62,7 +62,7 @@ class ExpenseStats:
                 key=k,
                 total=stats[k]['total_amount']/100,
                 count=stats[k]['count'],
-                percent=(stats[k]['total_amount']/100)/total
+                percent=(stats[k]['total_amount']/total)*100 if total else 0
             )
             by_cat.append(g)
         return by_cat
@@ -70,7 +70,7 @@ class ExpenseStats:
     def by_wallet(self, start_date: date, end_date: date) -> list[GroupRow]:
         exps = self.repo.list_all()
         in_range = [e for e in exps if start_date <= e.date <= end_date]
-        total = sum(e.amount for e in in_range)/100  # dividimos entre 100 para que el CLI recibas Euros, no céntimos
+        total = sum(e.amount for e in in_range) 
         stats = {}
         for e in in_range:
             if e.wallet not in stats:
@@ -83,7 +83,7 @@ class ExpenseStats:
                 key=k,
                 total=stats[k]['total_amount']/100,
                 count=stats[k]['count'],
-                percent=(stats[k]['total_amount']/100)/total
+                percent=(stats[k]['total_amount']/total)*100 if total else 0
             )
             by_wal.append(g)
         return by_wal
@@ -91,7 +91,7 @@ class ExpenseStats:
     def by_day(self, start_date: date, end_date: date) -> list[GroupRow]:
         exps = self.repo.list_all()
         in_range = [e for e in exps if start_date <= e.date <= end_date]
-        total = sum(e.amount for e in in_range)/100  # dividimos entre 100 para que el CLI recibas Euros, no céntimos
+        total = sum(e.amount for e in in_range)
         
         current = start_date
         stats = {}
@@ -110,7 +110,7 @@ class ExpenseStats:
                 key=k,
                 total=stats[k]['total_amount']/100,
                 count=stats[k]['count'],
-                percent=(stats[k]['total_amount']/100)/total
+                percent=(stats[k]['total_amount']/total)*100 if total else 0
             )
             by_day.append(g)
         return by_day
