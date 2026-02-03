@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class StatsSumary:
+class StatsSummary:
     total_amount: float
     count: int
     average: float
@@ -15,3 +15,13 @@ class GroupRow:
     total: float
     count: int
     percent: float
+    
+@dataclass
+class BudgetReport:
+    year: str
+    month: str
+    limit: float
+    spent: float
+    remaining: float
+    used: float
+    status: str
