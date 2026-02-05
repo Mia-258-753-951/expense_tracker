@@ -178,13 +178,13 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         SELECT category, COUNT(*), SUM(amount) FROM expenses
         WHERE date BETWEEN ? and ? 
         GROUP BY category 
-        ORDER BY SUM(amount) DESC
+        ORDER BY date DESC
         '''
         with self._get_connection() as conn:
             cur = conn.cursor()            
             rows = cur.execute(stmt, (start_date, end_date,)).fetchall()
-        conn.close()
-        return rows
+        
+        return [(r[0], r[1], r[2]) for r in rows]
     
     def by_wallet_stats(self, start_date: date, end_date: date) -> list[tuple[str, int, int]]:
         stmt = '''
