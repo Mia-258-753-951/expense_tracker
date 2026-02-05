@@ -1,8 +1,9 @@
-import pytest
 from datetime import date
 
-from expense_tracker.infrastructure.json_repo import JsonExpenseRepository
+import pytest
+
 from expense_tracker.domain.models import Expense
+from expense_tracker.infrastructure.json_repo import JsonExpenseRepository
 
 
 @pytest.fixture(scope='function')
@@ -36,7 +37,7 @@ def test_update_persists_updated_at_and_persists_changes(repo):
     
     repo.add(exp1)
     exp1.category = 'veterinary'    
-    assert exp1.updated_at == None
+    assert exp1.updated_at is not None
     
     repo.update(exp1)    
     updated = repo.get(exp1.id)

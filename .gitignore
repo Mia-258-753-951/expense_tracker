@@ -19,3 +19,6 @@ uv.lock
 # notas mías
 *.txt
 *.docx
+# data
+*db
+*.json

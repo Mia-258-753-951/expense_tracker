@@ -1,12 +1,12 @@
 
-from pathlib import Path
 import json
-from json import JSONDecodeError
-from typing import Any
 from datetime import date, datetime
+from json import JSONDecodeError
+from pathlib import Path
+from typing import Any
 
-from expense_tracker.ports.expense_repo import ExpenseRepository
 from expense_tracker.domain.models import Expense
+from expense_tracker.ports.expense_repo import ExpenseRepository
 
 JSON_PATH = Path(__file__).resolve().parents[2] / 'data/expenses.json'
 
@@ -22,7 +22,8 @@ class JsonExpenseRepository(ExpenseRepository):
                 data_=json.load(f)
                 if data_['schema_version'] != SUPPORTED_SCHEMA_V:
                     raise ValueError(
-                        f"schema_version '{data_['schema_version']}' not supported. Supported version: '{SUPPORTED_SCHEMA_V}'."
+                        f"schema_version '{data_['schema_version']}' not supported. "
+                        f"Supported version: '{SUPPORTED_SCHEMA_V}'."
                         )
                 self.data = self._json_to_data(data_)
         except (FileNotFoundError, JSONDecodeError):
@@ -33,7 +34,9 @@ class JsonExpenseRepository(ExpenseRepository):
         for e in j['expenses']:
             e['date'] = date.fromisoformat(e['date'])
             e['created_at'] = datetime.fromisoformat(e['created_at'])
-            e['updated_at'] = datetime.fromisoformat(e['updated_at']) if e['updated_at'] is not None else None
+            e['updated_at'] = datetime.fromisoformat(
+                e['updated_at']
+                ) if e['updated_at'] is not None else None
             model[e['id']] = Expense(**e)
         return model
     

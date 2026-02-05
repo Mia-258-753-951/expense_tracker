@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from expense_tracker.domain.errors import ExpenseAlreadyExists
 from expense_tracker.domain.models import Expense
 from expense_tracker.ports.expense_repo import ExpenseRepository
 
