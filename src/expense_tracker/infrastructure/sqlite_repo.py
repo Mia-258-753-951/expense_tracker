@@ -13,8 +13,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
     
     def __init__(self, path: Path = DB_PATH) -> None:
         self.path = path
-        init_db(self.path)
-        
+        init_db(self.path)        
     
     # helper para abrir conexión específica para cada transacción. cursor se crea in-situ
     def _get_connection(self) -> sqlite3.Connection:
@@ -54,9 +53,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()
             cur.execute(stmt, values)
-            
-        conn.close()
-            
+                                
         return exp.id        
 
     def get(self, exp_id: str) -> Expense | None:
@@ -67,7 +64,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()
             row = cur.execute(stmt, (exp_id,)).fetchone()
-        conn.close()
+        
         if row is None:
             return None
         return self._row_to_model(row)            
@@ -79,7 +76,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()
             rows = cur.execute(stmt).fetchall()
-        conn.close()
+        
         return [self._row_to_model(row) for row in rows]
 
     def update(self, modified_exp: Expense) -> Expense:
@@ -109,7 +106,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()
             cur.execute(stmt, values)
-        conn.close()
+        
         return modified_exp
 
     def delete(self, exp_id: str) -> None:
@@ -120,26 +117,26 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()
             cur.execute(stmt, (exp_id,))
-        conn.close()
+        
         return None
 
     # métodos de STATS
     
     def month_summary_stats(self, start_date: date, end_date: date) -> tuple[int, int]:
         stmt = '''
-        SELECT COUNT(*), COALESCE(SUM(amount), 0)
+        SELECT COALESCE(SUM(amount), 0), COUNT(*)
         FROM expenses
         WHERE date BETWEEN ? AND ?
         '''
         with self._get_connection() as conn:
             cur = conn.cursor()            
             row = cur.execute(stmt, (start_date, end_date,)).fetchone()
-        conn.close()
+        
         return row
     
-    def top_categories(self, start_date: date, end_date: date, limit: int) -> list[tuple[str, int]]:
+    def top_categories_by_amount(self, start_date: date, end_date: date, limit: int) -> list[tuple[str, int]]:
         stmt = '''
-        SELECT category, COUNT(*) FROM expenses
+        SELECT category, SUM(amount) FROM expenses
         WHERE date BETWEEN ? AND ?
         GROUP BY category 
         ORDER BY SUM(amount) DESC
@@ -148,12 +145,12 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()            
             row = cur.execute(stmt, (start_date, end_date, limit,)).fetchall()
-        conn.close()
+        
         return row
     
-    def top_wallets(self, start_date: date, end_date: date, limit: int) -> list[tuple[str, int]]:
+    def top_wallets_by_amount(self, start_date: date, end_date: date, limit: int) -> list[tuple[str, int]]:
         stmt = '''
-        SELECT wallet, COUNT(*) FROM expenses
+        SELECT wallet, SUM(amount) FROM expenses
         WHERE date BETWEEN ? AND ?
         GROUP BY wallet 
         ORDER BY SUM(amount) DESC
@@ -162,18 +159,18 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()            
             row = cur.execute(stmt, (start_date, end_date, limit,)).fetchall()
-        conn.close()
+        
         return row
 
     def summary_range_stats(self, start_date: date, end_date: date) -> tuple[int, int]:
         stmt = '''
-        SELECT COUNT(*), COALESCE(SUM(amount), 0) FROM expenses
+        SELECT COALESCE(SUM(amount), 0), COUNT(*) FROM expenses
         WHERE date BETWEEN ? AND ?
         '''
         with self._get_connection() as conn:
             cur = conn.cursor()            
             row = cur.execute(stmt, (start_date, end_date,)).fetchone()
-        conn.close()
+        
         return row
     
     def by_category_stats(self, start_date: date, end_date: date) -> list[tuple[str, int, int]]:
@@ -199,8 +196,8 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()            
             rows = cur.execute(stmt, (start_date, end_date,)).fetchall()
-        conn.close()
-        return rows
+        
+        return [(r[0], r[1], r[2]) for r in rows]
     
     def by_day_stats(self, start_date: date, end_date: date) -> list[tuple[str, int, int]]:
         stmt = '''
@@ -212,6 +209,6 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         with self._get_connection() as conn:
             cur = conn.cursor()            
             rows = cur.execute(stmt, (start_date, end_date,)).fetchall()
-        conn.close()
-        return rows
+        
+        return [(r[0], r[1], r[2]) for r in rows]
     

@@ -18,8 +18,8 @@ class ExpenseStats:
         
         total, count_ = self.repo.month_summary_stats(month_year.start_date, month_year.end_date)
         
-        top_cat = self.repo.top_categories(month_year.start_date, month_year.end_date, TOP_LIMIT)
-        top_wal = self.repo.top_wallets(month_year.start_date, month_year.end_date, TOP_LIMIT)
+        top_cat = self.repo.top_categories_by_amount(month_year.start_date, month_year.end_date, TOP_LIMIT)
+        top_wal = self.repo.top_wallets_by_amount(month_year.start_date, month_year.end_date, TOP_LIMIT)
                 
         return StatsSummary(
             total_amount=total/100,

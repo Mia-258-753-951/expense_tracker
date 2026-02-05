@@ -83,4 +83,4 @@ def test_init_db_creates_schema_version(repo, tmp_path):
                         SELECT * FROM schema_version
                         ''').fetchone()
         assert row['version'] == 1
-    conn.close()
+    
