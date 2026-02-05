@@ -2,6 +2,7 @@
 from datetime import date
 from typing import Protocol
 
+
 class ExpenseStatsRepository(Protocol):
     
     def month_summary_stats(self, start_date: date, end_date: date) -> tuple[int, int]: ...

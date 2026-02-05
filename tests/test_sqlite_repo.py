@@ -1,6 +1,7 @@
 
-import pytest
 from datetime import date
+
+import pytest
 
 from expense_tracker.domain.models import Expense
 from expense_tracker.infrastructure.sqlite_repo import SQLiteExpenseRepository

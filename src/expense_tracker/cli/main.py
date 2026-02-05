@@ -2,7 +2,6 @@ import typer
 
 import expense_tracker.cli.expense_cmd as exps
 from expense_tracker.cli import stats_cmd as stats
-from expense_tracker.infrastructure.json_repo import JsonExpenseRepository
 from expense_tracker.infrastructure.sqlite_repo import SQLiteExpenseRepository
 from expense_tracker.services.expense_service import ExpenseService
 from expense_tracker.services.stats_service import ExpenseStats

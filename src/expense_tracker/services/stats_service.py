@@ -1,7 +1,6 @@
 import calendar
-from datetime import date, timedelta
+from datetime import date
 
-from expense_tracker.ports.expense_repo import ExpenseRepository
 from expense_tracker.ports.stats_repo import ExpenseStatsRepository
 from expense_tracker.services.filters import StatsFilter
 from expense_tracker.services.stats_models import BudgetReport, GroupRow, StatsSummary
