@@ -7,12 +7,14 @@ from datetime import datetime, date
 from expense_tracker.ports.expense_repo import ExpenseRepository
 from expense_tracker.ports.stats_repo import ExpenseStatsRepository
 from expense_tracker.domain.models import Expense
-from expense_tracker.infrastructure.db import DB_PATH
+from expense_tracker.infrastructure.db import DB_PATH, init_db
 
 class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
     
     def __init__(self, path: Path = DB_PATH) -> None:
         self.path = path
+        init_db(self.path)
+        
     
     # helper para abrir conexión específica para cada transacción. cursor se crea in-situ
     def _get_connection(self) -> sqlite3.Connection:
@@ -84,7 +86,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
         modified_exp.updated_at = datetime.now()
         
         stmt = '''
-        UPDATE expenses SET(
+        UPDATE expenses SET
             date=?,
             amount=?,
             category=?,
@@ -93,7 +95,7 @@ class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
             currency=?,
             updated_at=?
         WHERE id=?            
-            )'''
+            '''
         values = (
             modified_exp.date.isoformat(),
             modified_exp.amount,
