@@ -16,8 +16,8 @@ class ExpenseFilter:
     sort_ para definir tipo de ordenación: 'amount' | 'date'.
     """
 
-    from_date_: date | None = None
-    to_date_: date | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     category_: str | None = None
     wallet_: str | None = None
     limit_: int | None = None  # nº máximo de registros a mostrar

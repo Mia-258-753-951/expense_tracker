@@ -40,13 +40,8 @@ def month_stats(month: str = typer.Option(..., "--month")):
     # El índice [1] nos da exactamente cuántos días tiene ese mes y año
     last_day = calendar.monthrange(start_date.year, start_date.month)[1]
     end_date = start_date.replace(day=last_day)
-
-    filter_ = StatsFilter(
-        start_date=start_date,
-        end_date=end_date,
-    )
-
-    stats = stat_serv.month_stats(month_year=filter_)
+    
+    stats = stat_serv.month_stats(start_date, end_date_)
     label_w = 22
     col_w = 8
     # pasamos los top cat y wal a str para no presentar listas al usuario

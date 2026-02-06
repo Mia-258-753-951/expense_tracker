@@ -10,15 +10,15 @@ class ExpenseStats:
     def __init__(self, repo: ExpenseStatsRepository) -> None:
         self.repo = repo
         
-    def month_stats(self, month_year: StatsFilter) -> StatsSummary:
+    def month_stats(self, start_date: date, end_date: date) -> StatsSummary:
         TOP_LIMIT = 3
-        if month_year.start_date is None or month_year.end_date is None:
+        if start_date is None or end_date is None:
             raise ValueError("Not a valid date range.")
         
-        total, count_ = self.repo.month_summary_stats(month_year.start_date, month_year.end_date)
+        total, count_ = self.repo.month_summary_stats(start_date, end_date)
         
-        top_cat = self.repo.top_categories_by_amount(month_year.start_date, month_year.end_date, TOP_LIMIT)
-        top_wal = self.repo.top_wallets_by_amount(month_year.start_date, month_year.end_date, TOP_LIMIT)
+        top_cat = self.repo.top_categories_by_amount(start_date, end_date, TOP_LIMIT)
+        top_wal = self.repo.top_wallets_by_amount(start_date, end_date, TOP_LIMIT)
                 
         return StatsSummary(
             total_amount=total/100,
