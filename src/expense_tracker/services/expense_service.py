@@ -20,10 +20,10 @@ class ExpenseService:
     def list_expenses(self, filters: ExpenseFilter) -> list[Expense]:
         exps = self.repo.list_all()
 
-        if filters.from_date_ is not None:
-            exps = [e for e in exps if e.date >= filters.from_date_]
-        if filters.to_date_ is not None:
-            exps = [e for e in exps if e.date <= filters.to_date_]
+        if filters.start_date is not None:
+            exps = [e for e in exps if e.date >= filters.start_date]
+        if filters.end_date is not None:
+            exps = [e for e in exps if e.date <= filters.end_date]
         if filters.category_ is not None:
             exps = [
                 e for e in exps if e.category.casefold() == filters.category_.strip().casefold()
