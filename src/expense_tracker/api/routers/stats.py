@@ -33,15 +33,18 @@ def stats_in_range(
     end_date: date,
     service: ExpenseStats=Depends(get_stats_service)
 ):
+    try:
+        stats = service.summary_range(start_date, end_date)
     
-    stats = service.summary_range(start_date, end_date)
+    except ValueError:
+        raise HTTPException(status_code=422, detail='Invalid date range.')
     
     return StatsInRange(
         total=stats.total_amount,
         count=stats.count,
         average=stats.average,
     )
-
+    
 Year = Annotated[int, Field(ge=2000, le=2100, description='YYYY')]
 Month = Annotated[int, Field(ge=1, le=12)]
 

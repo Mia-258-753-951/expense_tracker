@@ -46,10 +46,10 @@ def test_list_expense_aply_demanded_filters(exp_serv):
         wallet="home",
     )
     filter_1 = ExpenseFilter(
-        from_date_=date(2026, 1, 1),
+        start_date=date(2026, 1, 1),
     )
     filter_2 = ExpenseFilter(
-        to_date_=date(2026, 2, 1),
+        end_date=date(2026, 2, 1),
     )
 
     filter_3 = ExpenseFilter(category_="car")

@@ -6,9 +6,14 @@ class StatsSummary:
     total_amount: float
     count: int
     average: float
-    top_categories: list[str] | None = None
-    top_wallets: list[str] | None = None
-
+    top_categories: list[str]
+    top_wallets: list[str]
+    
+@dataclass
+class StatsRangeSummary:
+    total_amount: float
+    count: int
+    average: float
 
 @dataclass
 class GroupRow:

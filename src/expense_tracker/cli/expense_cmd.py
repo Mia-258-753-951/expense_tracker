@@ -63,8 +63,8 @@ def list(
     assert exp_serv is not None
 
     filters = ExpenseFilter(
-        from_date_=parse_date(start_date) if start_date is not None else None,
-        to_date_=parse_date(end_date) if end_date is not None else None,
+        start_date=parse_date(start_date) if start_date is not None else None,
+        end_date=parse_date(end_date) if end_date is not None else None,
         category_=category,
         wallet_=wallet,
         limit_=num_reg,

@@ -35,7 +35,7 @@ class ExpenseService:
         if filters.sort_ is not None:
             if filters.sort_ == "amount":
                 exps = sorted(exps, key=lambda e: e.amount)
-            if filters.sort_ == "date":
+            elif filters.sort_ == "date":
                 exps = sorted(exps, key=lambda e: e.date)
 
         return exps

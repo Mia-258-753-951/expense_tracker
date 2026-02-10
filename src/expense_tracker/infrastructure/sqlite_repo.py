@@ -8,6 +8,7 @@ from expense_tracker.infrastructure.db import DB_PATH, init_db
 from expense_tracker.ports.expense_repo import ExpenseRepository
 from expense_tracker.ports.stats_repo import ExpenseStatsRepository
 
+sqlite3.register_adapter(date, lambda d: d.isoformat())
 
 class SQLiteExpenseRepository(ExpenseRepository, ExpenseStatsRepository):
     

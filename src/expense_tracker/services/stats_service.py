@@ -2,8 +2,8 @@ import calendar
 from datetime import date
 
 from expense_tracker.ports.stats_repo import ExpenseStatsRepository
-from expense_tracker.services.filters import StatsFilter
-from expense_tracker.services.stats_models import BudgetReport, GroupRow, StatsSummary
+
+from expense_tracker.services.stats_models import BudgetReport, GroupRow, StatsSummary, StatsRangeSummary
 
 
 class ExpenseStats:
@@ -28,11 +28,13 @@ class ExpenseStats:
             top_wallets=[wal for wal, _ in top_wal],
         )
 
-    def summary_range(self, start_date: date, end_date: date) -> StatsSummary:
+    def summary_range(self, start_date: date, end_date: date) -> StatsRangeSummary:
+        if end_date < start_date:
+            raise ValueError('"end_date" must be >= "start_date".')
         
         total, count = self.repo.summary_range_stats(start_date, end_date)
 
-        return StatsSummary(
+        return StatsRangeSummary(
             total_amount=total/100,
             count=count,
             average=(total/100) / count if count else 0,

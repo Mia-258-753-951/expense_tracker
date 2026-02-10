@@ -12,6 +12,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
     "pytest>=9.0.2",
     "ruff>=0.14.14",
 ]
@@ -29,3 +30,5 @@ extend-immutable-calls = ["typer.Option", "typer.Argument"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 ignore = []
+
+

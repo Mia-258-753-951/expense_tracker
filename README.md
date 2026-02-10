@@ -184,3 +184,76 @@ data/expenses.db
 
 Este proyecto está pensado como ejercicio de aprendizaje serio y progresivo,
 priorizando diseño, claridad y mantenibilidad frente a complejidad innecesaria.
+
+# Expense Tracker – FastAPI
+
+API REST para gestionar gastos personales, con filtros, estadísticas y tests de integración.
+
+## Requisitos
+
+* Python 3.12+ (recomendado)
+* uv
+
+## Instalación
+
+Clona el repositorio y sincroniza dependencias:
+
+```bash
+uv sync --dev
+```
+
+Esto crea/actualiza el entorno virtual con todas las dependencias necesarias (runtime + desarrollo).
+
+## Ejecutar la API
+
+```bash
+uv run uvicorn expense_tracker.api.app:app --reload
+```
+
+La API estará disponible en:
+
+* [http://127.0.0.1:8000](http://127.0.0.1:8000)
+* Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+## Ejecutar los tests
+
+```bash
+uv run pytest
+```
+
+Esto ejecuta la suite completa de tests de API usando una base de datos SQLite temporal (aislada por test).
+
+## Endpoints principales
+
+### Health
+
+* `GET /health`
+* `GET /expenses/health`
+* `GET /stats/health`
+
+### Expenses
+
+* `POST /expenses`
+* `GET /expenses`
+* `GET /expenses/{id}`
+* `PATCH /expenses/{id}`
+* `DELETE /expenses/{id}`
+
+Soporta filtros por fecha, categoría, wallet, límite y ordenación.
+
+### Stats
+
+* `GET /stats/range`
+* `GET /stats/month`
+
+Devuelve totales, medias y agregados por categoría.
+
+## Desarrollo
+
+* Las dependencias de desarrollo están declaradas en `pyproject.toml`.
+* El entorno se gestiona con `uv`.
+* Los tests usan overrides de dependencias para no tocar la base de datos real.
+
+## Estado
+
+Proyecto cerrado a nivel funcional para esta fase. CRUD completo de gastos, estadísticas y cobertura de tests de API.

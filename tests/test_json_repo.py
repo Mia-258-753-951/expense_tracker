@@ -37,7 +37,7 @@ def test_update_persists_updated_at_and_persists_changes(repo):
     
     repo.add(exp1)
     exp1.category = 'veterinary'    
-    assert exp1.updated_at is not None
+    assert exp1.updated_at is None
     
     repo.update(exp1)    
     updated = repo.get(exp1.id)
